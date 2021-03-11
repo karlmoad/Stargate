@@ -32,15 +32,15 @@ def db_conn_menu():
     return [{'type': 'list',
              'name': 'db_config_sub_main',
              "message": 'Database Configuration Menu:',
-             'choices': ['New', 'Edit', '<Configuration Menu>']
+             'choices': ['New', 'Edit', 'View', '<Configuration Menu>']
              }]
 
 
-def db_conn_edit_menu(keys):
+def db_conn_select_menu(keys, msg=''):
     keys.append('<BACK>')
     return [{'type': 'list',
-             'name': 'db_config_sub_edit',
-             "message": 'Database Configuration Edit, Select Connection:',
+             'name': 'db_conn_selection',
+             "message": '{}, Select Connection:'.format(msg),
              'choices': keys
              }]
 
@@ -61,7 +61,7 @@ class Interface:
         figlet = Figlet(font='slant')
         print(figlet.renderText("Stargate"))
         print("Transporting your data from excel to databases everywhere\n")
-        print("By: Karl Moad")
+        print("By: Karl Moad  (Super Genius)")
         print("Certified WORKS ON MY MACHINE approved - 2021")
         print("Provided as is with no expressed warranties of function. You break it, you fix it.")
         print('-'*80)
@@ -96,16 +96,25 @@ class Interface:
         selection = str(inputz['db_config_sub_main']).lower()
         if selection == 'new':
             self._edit_database_connection()
-        elif selection == 'edit':
+        elif selection == 'edit' or selection == 'view':
             keys = self._configMar.get_database_connection_names()
-            editz = prompt(db_conn_edit_menu(keys))
-            selection_sub = str(editz['db_config_sub_edit'])
+            editz = prompt(db_conn_select_menu(keys, msg='Edit Database Connection'))
+            selection_sub = str(editz['db_conn_selection'])
             if self._configMar.database_connection_exists(selection_sub):
-                self._edit_database_connection(selection_sub)
+                if selection == 'edit':
+                    self._edit_database_connection(selection_sub)
+                else:
+                    self._view_database_connection(selection_sub)
             else:
                 self._database_config_menu()
         else:
             self._config_menu()
+
+    def _view_database_connection(self, name=None):
+        dbc = DatabaseConnection(self._configMar)
+        dbc.initialize(name)
+        print(dbc)
+        self._database_config_menu()
 
     def _edit_database_connection(self, name=None):
         dbc = DatabaseConnection(self._configMar)

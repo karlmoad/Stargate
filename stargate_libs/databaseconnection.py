@@ -120,3 +120,12 @@ class DatabaseConnection:
         if 'user' in self._connInfo:
             info['user'] = self._connInfo['user']
         return info
+
+    def __str__(self):
+        return "Name:{}, Type:{}, Host:{},Port:{}, User:{}".format(self._name,
+                                            self._connInfo['type'] if 'type' in self._connInfo else '<UNDEFNINED>',
+                                            self._connInfo['host'] if 'host' in self._connInfo else '<UNDEFNINED>',
+                                            self._connInfo['port'] if 'port' in self._connInfo else '<UNDEFNINED>',
+                                            self._connInfo['user'] if 'user' in self._connInfo else '<UNDEFNINED>')
+
+

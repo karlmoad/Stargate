@@ -51,6 +51,7 @@ class ConfigurationManager:
             return False
         if name not in self._config['connections']:
             return False
+        return True
 
     def get_database_connection_names(self):
         keys = []
