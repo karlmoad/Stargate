@@ -50,7 +50,6 @@ class Interface:
         self._configMar = None
         self._loadConfig()
         self._intro()
-        self._main()
 
     def _loadConfig(self):
         self._configMar = ConfigurationManager()
@@ -62,18 +61,15 @@ class Interface:
         print(figlet.renderText("Stargate"))
         print("Transporting your data from excel to databases everywhere\n")
         print("By: Karl Moad  (Super Genius)")
-        print("Certified WORKS ON MY MACHINE approved - 2021")
+        print("Certified WORKS ON MY MACHINE - 2021")
         print("Provided as is with no expressed warranties of function. You break it, you fix it.")
         print('-'*80)
 
-        # for fun
-        # print("Here is a progress bar so you think its doing something important.")
-        # foobar = tqdm(total=10)
-        # for i in range(10):
-        #     foobar.update(1)
-        #     time.sleep(.5)
-        # foobar.close()
-        # end fun
+
+
+    def start(self):
+        # make a decision on if to start interactive session or run process based on arguments
+        self._main()
 
     def _main(self):
         inputz = prompt(main_menu())
@@ -83,11 +79,27 @@ class Interface:
         else:
             return
 
+    def _fun(self):
+        code = prompt([{'type': 'input', 'name': 'code', 'message': 'Enter Secret Code:'}])
+        confirm = prompt(confirm_menu("Would you like ot play a game?"))
+        if 'confirm' in confirm and confirm['confirm']:
+            print("Launching the missiles.")
+            foobar = tqdm(total=10)
+            for i in range(10):
+                foobar.update(1)
+                time.sleep(.5)
+            foobar.close()
+            time.sleep(10)
+        print("END_OF_LINE")
+        return
+
     def _config_menu(self):
         inputz = prompt(config_menu())
         selection = str(inputz['config_sub']).lower()
         if selection == 'database connections':
             self._database_config_menu()
+        elif selection == 'nuclear codes':
+            self._fun()
         else:
             self._main()
 
@@ -98,7 +110,7 @@ class Interface:
             self._edit_database_connection()
         elif selection == 'edit' or selection == 'view':
             keys = self._configMar.get_database_connection_names()
-            editz = prompt(db_conn_select_menu(keys, msg='Edit Database Connection'))
+            editz = prompt(db_conn_select_menu(keys, msg='{} Database Connection'.format(selection.upper())))
             selection_sub = str(editz['db_conn_selection'])
             if self._configMar.database_connection_exists(selection_sub):
                 if selection == 'edit':
