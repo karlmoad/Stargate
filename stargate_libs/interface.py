@@ -44,6 +44,15 @@ def db_conn_select_menu(keys, msg=''):
              'choices': keys
              }]
 
+
+def render(section, func):
+    inpt = prompt(func)
+    if section in inpt:
+        return inpt
+    else:
+        render(section, func)
+
+
 class Interface:
     def __init__(self, argz):
         self._argz = argz
@@ -69,13 +78,19 @@ class Interface:
 
     def start(self):
         # make a decision on if to start interactive session or run process based on arguments
-        self._main()
+        if self._argz.file is not None:
+            self._import()
+        else:
+            self._main()
 
     def _main(self):
-        inputz = prompt(main_menu())
-        selection = str(inputz['main']).lower()
-        if selection == 'configure':
-            self._config_menu()
+        inputz = render('main', main_menu())
+        if 'main' in inputz:
+            selection = str(inputz['main']).lower()
+            if selection == 'configure':
+               self._config_menu()
+            else:
+               return
         else:
             return
 
@@ -94,7 +109,7 @@ class Interface:
         return
 
     def _config_menu(self):
-        inputz = prompt(config_menu())
+        inputz = render('config_sub', config_menu())
         selection = str(inputz['config_sub']).lower()
         if selection == 'database connections':
             self._database_config_menu()
@@ -104,14 +119,14 @@ class Interface:
             self._main()
 
     def _database_config_menu(self):
-        inputz = prompt(db_conn_menu())
+        inputz = render('db_config_sub_main', db_conn_menu())
         selection = str(inputz['db_config_sub_main']).lower()
         if selection == 'new':
             self._edit_database_connection()
         elif selection == 'edit' or selection == 'view':
             keys = self._configMar.get_database_connection_names()
-            editz = prompt(db_conn_select_menu(keys, msg='{} Database Connection'.format(selection.upper())))
-            selection_sub = str(editz['db_conn_selection'])
+            selz = render('db_conn_selection', db_conn_select_menu(keys, msg='{} Database Connection'.format(selection.upper())))
+            selection_sub = str(selz['db_conn_selection'])
             if self._configMar.database_connection_exists(selection_sub):
                 if selection == 'edit':
                     self._edit_database_connection(selection_sub)
@@ -143,6 +158,10 @@ class Interface:
             else:
                 self._configMar.save()
         self._database_config_menu()
+
+    def _import(self):
+        
+
 
 
 
