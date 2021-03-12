@@ -3,7 +3,10 @@ from stargate_libs import DatabaseConnection
 import pandas as pd
 import openpyxl
 import shortuuid
-
+import pymysql
+import pyodbc
+from sqlalchemy import create_engine
+import traceback
 
 def get_connection_name(keys):
     return {'type': 'list',
@@ -136,6 +139,17 @@ class Processor:
             print('Database configuration: {} does not exist.. terminating'.format(self._db))
             return
 
-        print(dbc.connection_string())
+        # debug
+        # print(self._table)
+        # print(dbc.connection_string())
+        # print(self._if_exists)
+        # print(data)
 
-        print(data)
+        try:
+            engine = create_engine(dbc.connection_string())
+            data.to_sql(name=self._table, con=engine, if_exists=self._if_exists, index=False)
+        except ValueError as ve:
+            print('ERROR ERROR.  Well that didnt work, review the following and rerun\n')
+            print(traceback.format_exc(ve))
+        finally:
+            print("\nEND_OF_LINE")
