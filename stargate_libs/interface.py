@@ -2,6 +2,7 @@ from PyInquirer import prompt
 from pyfiglet import Figlet
 from stargate_libs import ConfigurationManager
 from stargate_libs import DatabaseConnection
+from stargate_libs import Processor
 from tqdm import tqdm
 import time
 
@@ -13,12 +14,14 @@ def main_menu():
              'choices': ['Configure', 'Import', 'Exit']
              }]
 
+
 def confirm_menu(msg):
     return [{'type': 'confirm',
              'name': 'confirm',
              'message': msg,
              'default': True
              }]
+
 
 def config_menu():
     return [{'type': 'list',
@@ -57,6 +60,7 @@ class Interface:
     def __init__(self, argz):
         self._argz = argz
         self._configMar = None
+        self._processor = None
         self._loadConfig()
         self._intro()
 
@@ -69,12 +73,10 @@ class Interface:
         figlet = Figlet(font='slant')
         print(figlet.renderText("Stargate"))
         print("Transporting your data from excel to databases everywhere\n")
-        print("By: Karl Moad  (Super Genius)")
+        print("By: Karl Moad")
         print("Certified WORKS ON MY MACHINE - 2021")
         print("Provided as is with no expressed warranties of function. You break it, you fix it.")
         print('-'*80)
-
-
 
     def start(self):
         # make a decision on if to start interactive session or run process based on arguments
@@ -151,7 +153,7 @@ class Interface:
 
         savez = prompt(confirm_menu("Save Configuration?"))
         if savez['confirm']:
-            dbc.load(props)
+            dbc.set_properties(props)
             r,m = dbc.save()
             if not r:
                 print("Unable to save connection info: reason, {}".format(m))
@@ -160,7 +162,10 @@ class Interface:
         self._database_config_menu()
 
     def _import(self):
-        
+        self._processor = Processor(self._argz, self._configMar)
+        neededParams = self._processor.evaluate_params()
+        params = prompt(neededParams)
+
 
 
 
