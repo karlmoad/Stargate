@@ -165,7 +165,8 @@ class Interface:
         self._processor = Processor(self._argz, self._configMar)
         neededParams = self._processor.evaluate_params()
         params = prompt(neededParams)
-
+        self._processor.load_params(params)
+        self._processor.run()
 
 
 

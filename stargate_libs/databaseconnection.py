@@ -156,7 +156,7 @@ class DatabaseConnection:
             return ''
 
         user = self._connInfo['user'] if 'user' in self._connInfo else ''
-        pwd = self._connInfo['password'] if 'password' in self._connInfo else ''
+        pwd = self._pwd if self._pwd is not None else ''
         host = self._connInfo['host'] if 'host' in self._connInfo else ''
         port = ':{}'.format(self._connInfo['port']) if 'port' in self._connInfo and len(str(self._connInfo['port']).strip()) > 0 else ''
         schema = self._connInfo['schema'] if 'schema' in self._connInfo else ''

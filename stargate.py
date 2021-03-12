@@ -16,7 +16,7 @@ def main():
     arg_parser.add_argument('--if-exists',
                             type=str,
                             required=False,
-                            help="How to behave if table exists, defaults to append",
+                            help="How to behave if table exists",
                             choices=['fail', 'append', 'replace'])
     arg_parser.add_argument('--config', type=str,
                             help='path to configuration json file, if not specified default [$HOME/.stargate/config.json] will be used')
