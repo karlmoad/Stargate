@@ -6,11 +6,12 @@ import shortuuid
 
 
 def get_connection_name(keys):
-    return [{'type': 'list',
+    return {'type': 'list',
              'name': 'db',
              "message": 'database connection:',
              'choices': keys
-             }]
+             }
+
 
 def get_input_sheet():
     d = {'type': 'input', 'name': 'sheet', 'message': 'worksheet name, defaults to first in workbook:'}
@@ -28,25 +29,22 @@ def get_input_file_name():
 
 
 def get_casing_choice():
-    d = {'type': 'list', 'name': 'casing', 'message': 'database type:', 'choices': ['upper', 'lower', 'none'], 'default': 'none'}
+    d = {'type': 'list', 'name': 'casing', 'message': 'apply column name casing:', 'choices': ['upper', 'lower', 'none'], 'default': 'none'}
     return d
 
 
 def get_add_uuid_confirmation():
-    return [{'type': 'confirm',
-             'name': 'uuid',
-             'message': 'add a uuid based index column',
-             'default': True
-             }]
+    return {'type': 'confirm', 'name': 'uuid', 'message': 'add a uuid based index column', 'default': True}
 
 
 def get_if_exists_choice():
-    d = {'type': 'list', 'name': 'if_exists', 'message': 'database type:', 'choices': ['fail', 'append', 'replace'], 'default': 'append'}
+    d = {'type': 'list', 'name': 'if_exists', 'message': 'if exists behavior:', 'choices': ['fail', 'append', 'replace'], 'default': 'append'}
     return d
 
 
-def get_password()
+def get_password():
     return {'type': 'password', 'name': 'password', 'message': 'database user password:'}
+
 
 class Processor:
     def __init__(self, argz, config: ConfigurationManager):
@@ -120,19 +118,20 @@ class Processor:
         print('Starting process...')
         print('Loading file:{}'.format(self._file))
         sheet = self._sheet
-        if len(str(sheet).strip()) <= 0:
+        if sheet is None or len(str(sheet).strip()) <= 0:
             sheet = 0
-        data = pd.read_excel(self._file, engine=openpyxl, sheet_name=sheet)
-        print('Loaded {} rows.'.format(data.shape[0]))
+
+        data = pd.read_excel(self._file, engine='openpyxl', sheet_name=sheet)
+        print("Loaded sheet: {}, rows: {}".format(sheet, data.shape[0]))
+
+        if self._uuid:
+            data['uuid'] = [shortuuid.uuid() for _ in range(len(data.index))]
 
         if self._casing is not None:
             data.columns = map(self._casing, data.columns)
 
-        if self._uuid:
-            data['uuid'] = [shortuuid.uuid() for _ in range(data.shape[0])]
-
         dbc = DatabaseConnection(self._config)
-        r,_ = dbc.initialize(self._db, self._password)
+        r, _ = dbc.initialize(self._db, self._password)
         if not r:
             print('Database configuration: {} does not exist.. terminating'.format(self._db))
             return
