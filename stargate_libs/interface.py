@@ -90,9 +90,11 @@ class Interface:
         if 'main' in inputz:
             selection = str(inputz['main']).lower()
             if selection == 'configure':
-               self._config_menu()
+                self._config_menu()
+            elif selection == 'import':
+                self._import()
             else:
-               return
+                return
         else:
             return
 
