@@ -31,6 +31,6 @@ $ python stargate.py
 **Notes:** 
 
 - To configure database connections you must execute the command in interactive mode
-- During command argument execution mode if a required argument value is not suppled the program will invoke the interactive mode elements to collect the data elements.
+- During command argument execution mode if a required argument value is not supplied the program will invoke the interactive mode elements to collect the data elements.
 - Default configuration is stored at **$HOME/.stargate/config.json**
 
